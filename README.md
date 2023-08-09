@@ -8,6 +8,13 @@ Ce projet est un diaporama interactif riche en fonctionnalités qui permet aux u
 - Menu de navigation: Un menu de navigation stylisé qui s'affiche et disparaît en fonction de l'interaction de l'utilisateur. Reste visible lorsque l'utilisateur passe la souris dessus.
 - Autoplay: Un bouton pour activer la lecture automatique des diapositives.
 
+## Fonctionnalités à venir
+- Transition entre les slides (fade, fade-up, fade-down, fade-left, fade-right, blur, bounce).
+- Animations d'apparitions des textes sur le diaporama (fade, fade-up, fade-down, fade-left, fade-right, blur, bounce).
+- Ajout d'un bouton pour locker le menu de navigation.
+- Ajout d'une touche pour faire apparaitre / disparaitre le menu de navigation.
+- Ajout de la possibilité de mettre des images en plus des paragraphes de textes déjà présents.
+
 ## Comment utiliser
 ### Structure HTML
 Incluez vos diapositives dans une structure comme celle-ci :
