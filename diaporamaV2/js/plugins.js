@@ -1,24 +1,60 @@
-// Avoid `console` errors in browsers that lack a console.
-(function() {
-  var method;
-  var noop = function () {};
-  var methods = [
-    'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
-    'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
-    'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
-    'timeline', 'timelineEnd', 'timeStamp', 'trace', 'warn'
-  ];
-  var length = methods.length;
-  var console = (window.console = window.console || {});
-
-  while (length--) {
-    method = methods[length];
-
-    // Only stub undefined methods.
-    if (!console[method]) {
-      console[method] = noop;
-    }
+function goToSlide2(slideIndex) {
+  if (slideIndex < 0) {
+    slideIndex = slides.length - 1;
+  } else if (slideIndex >= slides.length) {
+    slideIndex = 0;
   }
-}());
 
-// Place any jQuery/helper plugins in here.
+  currentSlide = slideIndex;
+
+  slides.forEach((slideWrapper, index) => {
+    const transition = slideWrapper.getAttribute('data-transition') || 'none';
+
+    const text = slideWrapper.getAttribute('data-text');
+    const textPosition = slideWrapper.getAttribute('data-text-position');
+    const textElement = slideWrapper.querySelector('.text');
+    textElement.textContent = text;
+
+    switch (textPosition) {
+      case 'top-left':
+        textElement.style.left = '50px';
+        textElement.style.top = '50px';
+        break;
+      case 'top-right':
+        textElement.style.right = '50px';
+        textElement.style.top = '50px';
+        break;
+      case 'bottom-right':
+        textElement.style.right = '50px';
+        textElement.style.bottom = '50px';
+        break;
+      case 'bottom-left':
+        textElement.style.left = '50px';
+        textElement.style.bottom = '50px';
+        break;
+      case 'center':
+        textElement.style.left = '50%';
+        textElement.style.top = '50%';
+        textElement.style.transform = 'translate(-50%, -50%)';
+        break;
+        // etc...
+    }
+
+    const bgImage = slideWrapper.getAttribute('data-bg-image');
+    slideWrapper.style.backgroundImage = `url(${bgImage})`;
+    slideWrapper.querySelector('.text').textContent = text;
+
+    if (index === currentSlide) {
+      slideWrapper.classList.add('active');
+    } else {
+      slideWrapper.classList.remove('active');
+    }
+
+    applyTransition(slideWrapper, transition);
+
+    let translateY = -currentSlide * 100;
+    setTimeout(() => {
+      slideWrapper.style.transform = `translateY(${translateY}vh)`;
+    }, 1000); // Même durée que la transition CSS
+  });
+}
