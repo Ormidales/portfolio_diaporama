@@ -1,7 +1,7 @@
-const slides = document.querySelectorAll('.slide');
-const prevButton = document.querySelector('.prev-button');
-const nextButton = document.querySelector('.next-button');
-let currentSlide = 0;
+const slides = document.querySelectorAll('.slide'); // Variable pour enregistrer toutes les diapositives
+const prevButton = document.querySelector('.prev-button'); // Variable pour passer à la diapositive précédente
+const nextButton = document.querySelector('.next-button'); // Variable pour passer à la diapositive suivante
+let currentSlide = 0; // Variable pour suivre l'index de la diapositive actuelle
 
 document.addEventListener('wheel', (event) => {
   const delta = event.deltaY;
@@ -15,17 +15,36 @@ document.addEventListener('wheel', (event) => {
 const navigationButtons = document.querySelector('.navigation-buttons');
 let timeout;
 let isMouseOver = false; // Variable pour vérifier si la souris est sur le menu
+let menuLocked = false; // Variable pour vérifier si le menu est verrouillé
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'M' || event.key === 'm') {
+    menuLocked = !menuLocked; // bascule l'état du menu verrouillé
+
+    // Si le menu est verrouillé, assurez-vous qu'il est visible et effacez le délai
+    if (menuLocked) {
+      navigationButtons.style.opacity = '1';
+      clearTimeout(timeout);
+    } else {
+      // Sinon, lancez la routine de masquage habituelle
+      showButtons();
+    }
+  }
+});
 
 function hideButtons() {
-  if (!isMouseOver) { // Ne masquez que si la souris n'est pas sur le menu
+  // Ne masquez les boutons que si le menu n'est pas verrouillé
+  if (!menuLocked) {
     navigationButtons.style.opacity = '0';
   }
 }
 
 function showButtons() {
   navigationButtons.style.opacity = '1';
-  clearTimeout(timeout);
-  timeout = setTimeout(hideButtons, 2000); // Masquer après 2 secondes d'inactivité
+  if (!menuLocked) {
+    clearTimeout(timeout);
+    timeout = setTimeout(hideButtons, 2000); // Masquer après 2 secondes d'inactivité
+  }
 }
 
 // Ajouter un écouteur d'événements pour vérifier si la souris est sur le menu
@@ -146,13 +165,15 @@ function goToSlide(slideIndex) {
     let translateY = -currentSlide * 100;
     slideWrapper.style.transform = `translateY(${translateY}vh)`;
 
+    const slideNumberElement = document.getElementById('slide-number');
+    slideNumberElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+
     const bgImage = slideWrapper.getAttribute('data-bg-image');
     slideWrapper.style.backgroundImage = `url(${bgImage})`;
 
     const textElements = slideWrapper.querySelectorAll('p'); // Supposons que chaque texte est dans un élément <p>
-
     textElements.forEach((textElement) => {
-      const textPosition = textElement.getAttribute('data-text-position').split(',');
+      const textPosition = textElement.getAttribute('data-text-position').split(',') || ['50%', '50%']; // Position du texte
       const textOrientation = textElement.getAttribute('data-text-orientation');
       const textBgColor = textElement.getAttribute('data-text-bgcolor') || 'transparent'; // Couleur d'arrière-plan
       const textColor = textElement.getAttribute('data-text-color') || '#000000'; // Couleur du texte
@@ -178,6 +199,29 @@ function goToSlide(slideIndex) {
       if (index === currentSlide) {
         // Vous pouvez appliquer des transitions spécifiques ici si nécessaire
       }
+    });
+
+    const imgElements = slideWrapper.querySelectorAll('img'); // Supposons que chaque image est dans un élément <img>
+    imgElements.forEach((imgElement) => {
+        const imgPosition = imgElement.getAttribute('data-img-position').split(',') || ['50%', '50%']; // Position de l'image
+        const imgOrientation = imgElement.getAttribute('data-img-orientation');
+        const imgWidth = imgElement.getAttribute('data-img-width') || '300px'; // Largeur de l'image
+        const imgRoundness = imgElement.getAttribute('data-img-roundness') || '0'; // Arrondi des coins de l'image
+        const imgOpacity = imgElement.getAttribute('data-img-opacity') || '1'; // Opacité
+        const imgIndex = imgElement.getAttribute('data-img-index') || '0'; // Index Z
+
+        imgElement.style.position = 'absolute';
+        imgElement.style.left = `${imgPosition[0]}`; // Assurez-vous que imgPosition[0] est en pixels
+        imgElement.style.top = `${imgPosition[1]}`; // Assurez-vous que imgPosition[1] est en pixels
+        imgElement.style.transform = `rotate(${imgOrientation}deg)`; // Rotation de l'image
+        imgElement.style.width = imgWidth; // Largeur de l'image
+        imgElement.style.borderRadius = imgRoundness; // Arrondi des coins de l'image
+        imgElement.style.opacity = imgOpacity; // Opacité
+        imgElement.style.zIndex = imgIndex; // Index Z
+
+        if (index === currentSlide) {
+            // Vous pouvez appliquer des transitions spécifiques ici si nécessaire
+        }
     });
 
     if (index === currentSlide) {
