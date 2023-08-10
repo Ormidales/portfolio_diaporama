@@ -67,90 +67,6 @@ document.addEventListener('keydown', showButtons);
 // Masquer les boutons après un délai initial
 timeout = setTimeout(hideButtons, 2000);
 
-function applyTransition(slideWrapper, transition) {
-  switch (transition) {
-    case 'fade':
-      slideWrapper.style.opacity = '0';
-      setTimeout(() => {
-        slideWrapper.style.opacity = '1';
-      }, 500); // Même durée que la transition CSS
-      break;
-    case 'zoom-in':
-      slideWrapper.style.transform = 'scale(0)';
-      slideWrapper.style.opacity = '0';
-      setTimeout(() => {
-        slideWrapper.style.transform = 'scale(1)';
-        slideWrapper.style.opacity = '1';
-      }, 500); // Même durée que la transition CSS
-      break;
-    case 'slide-in':
-      slideWrapper.style.transform = 'translateX(100%)';
-      slideWrapper.style.opacity = '1';
-      setTimeout(() => {
-        slideWrapper.style.transform = 'translateX(0)';
-      }, 10);
-      break;
-    case 'rotate':
-      slideWrapper.style.transform = 'rotate(-360deg)';
-      slideWrapper.style.opacity = '1';
-      setTimeout(() => {
-        slideWrapper.style.transform = 'rotate(0)';
-      }, 10);
-      break;
-    case 'flip':
-      slideWrapper.style.transform = 'rotateY(180deg)';
-      slideWrapper.style.opacity = '1';
-      setTimeout(() => {
-        slideWrapper.style.transform = 'rotateY(0)';
-      }, 10);
-      break;
-    case 'bounce':
-      slideWrapper.style.transform = 'scale(0.9)';
-      slideWrapper.style.opacity = '1';
-      setTimeout(() => {
-        slideWrapper.style.transform = 'scale(1.1)';
-      }, 150);
-      setTimeout(() => {
-        slideWrapper.style.transform = 'scale(1)';
-      }, 300);
-      break;
-    case 'blur':
-      slideWrapper.style.filter = 'blur(50px)';
-      slideWrapper.style.opacity = '1';
-      setTimeout(() => {
-        slideWrapper.style.filter = 'blur(0)';
-      }, 10);
-      break;
-    case 'scale-up':
-      slideWrapper.style.transform = 'scale(0.5)';
-      slideWrapper.style.opacity = '1';
-      setTimeout(() => {
-        slideWrapper.style.transform = 'scale(1)';
-      }, 10);
-      break;
-    // Ajoutez d'autres transitions ici...
-  }
-}
-
-function applyTextTransition(textElement, transition) {
-  switch (transition) {
-    case 'fade':
-      textElement.style.opacity = '0';
-      setTimeout(() => {
-        textElement.style.opacity = '1';
-      }, 500);
-      break;
-    case 'slide-in':
-      textElement.style.transform = 'translateX(-100%)';
-      setTimeout(() => {
-        textElement.style.transform = 'translateX(0)';
-      }, 500);
-      break;
-      // Ajoutez d'autres transitions ici...
-  }
-}
-
-
 function goToSlide(slideIndex) {
   if (slideIndex < 0) {
     slideIndex = slides.length - 1;
@@ -159,8 +75,6 @@ function goToSlide(slideIndex) {
   }
 
   currentSlide = slideIndex;
-
-
   slides.forEach((slideWrapper, index) => {
     let translateY = -currentSlide * 100;
     slideWrapper.style.transform = `translateY(${translateY}vh)`;
@@ -182,6 +96,7 @@ function goToSlide(slideIndex) {
       const textWidth = textElement.getAttribute('data-text-width') || '300px'; // Largeur du texte
       const textPadding = textElement.getAttribute('data-text-padding') || '1rem'; // Rembourrage du texte
       const textRoundness = textElement.getAttribute('data-text-roundness') || '0'; // Arrondi des coins du texte
+      const textAnimation = textElement.getAttribute('data-object-animation'); // Effet d'image
 
       textElement.style.position = 'absolute';
       textElement.style.left = `${textPosition[0]}`; // Assurez-vous que textPosition[0] est en pixels
@@ -195,6 +110,7 @@ function goToSlide(slideIndex) {
       textElement.style.padding = textPadding; // Rembourrage du texte
       textElement.style.lineHeight = textSize; // Hauteur de ligne égale à la taille du texte
       textElement.style.borderRadius = textRoundness; // Arrondi des coins du texte
+      textElement.style.animation = textAnimation; // Transition
 
       if (index === currentSlide) {
         // Vous pouvez appliquer des transitions spécifiques ici si nécessaire
@@ -203,25 +119,36 @@ function goToSlide(slideIndex) {
 
     const imgElements = slideWrapper.querySelectorAll('img'); // Supposons que chaque image est dans un élément <img>
     imgElements.forEach((imgElement) => {
-        const imgPosition = imgElement.getAttribute('data-img-position').split(',') || ['50%', '50%']; // Position de l'image
-        const imgOrientation = imgElement.getAttribute('data-img-orientation');
-        const imgWidth = imgElement.getAttribute('data-img-width') || '300px'; // Largeur de l'image
-        const imgRoundness = imgElement.getAttribute('data-img-roundness') || '0'; // Arrondi des coins de l'image
-        const imgOpacity = imgElement.getAttribute('data-img-opacity') || '1'; // Opacité
-        const imgIndex = imgElement.getAttribute('data-img-index') || '0'; // Index Z
+      const imgPosition = imgElement.getAttribute('data-img-position').split(',') || ['50%', '50%']; // Position de l'image
+      const imgOrientation = imgElement.getAttribute('data-img-orientation');
+      const imgWidth = imgElement.getAttribute('data-img-width') || '300px'; // Largeur de l'image
+      const imgRoundness = imgElement.getAttribute('data-img-roundness') || '0'; // Arrondi des coins de l'image
+      const imgOpacity = imgElement.getAttribute('data-img-opacity') || '1'; // Opacité
+      const imgIndex = imgElement.getAttribute('data-img-index') || '0'; // Index Z
+      const imgAnimation = imgElement.getAttribute('data-object-animation'); // Effet d'image
 
-        imgElement.style.position = 'absolute';
-        imgElement.style.left = `${imgPosition[0]}`; // Assurez-vous que imgPosition[0] est en pixels
-        imgElement.style.top = `${imgPosition[1]}`; // Assurez-vous que imgPosition[1] est en pixels
-        imgElement.style.transform = `rotate(${imgOrientation}deg)`; // Rotation de l'image
-        imgElement.style.width = imgWidth; // Largeur de l'image
-        imgElement.style.borderRadius = imgRoundness; // Arrondi des coins de l'image
-        imgElement.style.opacity = imgOpacity; // Opacité
-        imgElement.style.zIndex = imgIndex; // Index Z
+      imgElement.style.position = 'absolute';
+      imgElement.style.left = `${imgPosition[0]}`; // Assurez-vous que imgPosition[0] est en pixels
+      imgElement.style.top = `${imgPosition[1]}`; // Assurez-vous que imgPosition[1] est en pixels
+      imgElement.style.transform = `rotate(${imgOrientation}deg)`; // Rotation de l'image
+      imgElement.style.width = imgWidth; // Largeur de l'image
+      imgElement.style.borderRadius = imgRoundness; // Arrondi des coins de l'image
+      imgElement.style.opacity = imgOpacity; // Opacité
+      imgElement.style.zIndex = imgIndex; // Index Z
+      imgElement.style.animation = imgAnimation; // Transition
 
-        if (index === currentSlide) {
-            // Vous pouvez appliquer des transitions spécifiques ici si nécessaire
-        }
+      if (index === currentSlide) {
+        // Vous pouvez appliquer des transitions spécifiques ici si nécessaire
+      }
+    });
+
+    // Gestion des animations d'apparition
+    const animatedElements = slideWrapper.querySelectorAll('[data-object-order]');
+    animatedElements.forEach((element) => {
+      if (index === currentSlide) {
+        slideWrapper.classList.add('active');
+        element.classList.add('hidden-element'); // Cacher l'élément initialement
+      }
     });
 
     if (index === currentSlide) {
@@ -249,8 +176,27 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-let autoplayInterval = null; // Pour conserver l'intervalle de l'autoplay
+// Écouteur d'événements pour la touche "Espace"
+let currentOrder = 0; // Suivi de l'ordre actuel
+document.addEventListener('keyup', function(e) {
+  if (e.code === 'Space') {
+    const slide = document.querySelector('.slide.active'); // Assurez-vous que vous avez une classe "active" sur la diapositive actuelle
+    const elements = Array.from(slide.querySelectorAll('[data-object-order]'));
+    elements.sort((a, b) => parseInt(a.getAttribute('data-object-order')) - parseInt(b.getAttribute('data-object-order'))); // Trier par ordre
 
+    if (currentOrder < elements.length) {
+      elements[currentOrder].classList.remove('hidden-element'); // Affiche l'élément suivant
+      currentOrder++;
+    } else {
+        elements.forEach((element) => {
+            element.classList.add('hidden-element'); // Réinitialiser l'état pour la prochaine diapositive
+        });
+        currentOrder = 0;
+    }
+  }
+});
+
+let autoplayInterval = null; // Pour conserver l'intervalle de l'autoplay
 function toggleAutoplay() {
   if (autoplayInterval) {
     clearInterval(autoplayInterval);
@@ -263,7 +209,6 @@ function toggleAutoplay() {
     document.getElementById('autoplayButton').textContent = "Arrêter l'Autoplay";
   }
 }
-
 document.getElementById('autoplayButton').addEventListener('click', toggleAutoplay);
 
 goToSlide(0);
